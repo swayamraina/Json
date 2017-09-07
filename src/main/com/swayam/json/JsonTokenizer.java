@@ -173,4 +173,10 @@ public class JsonTokenizer implements UniversalConstants {
 				return ' ';
 		}
 	}
+	
+	private void skipSpaces() {
+		while(this.currentCharacter == UniversalConstants.SPACE) {
+			this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+		}
+	}
 }
