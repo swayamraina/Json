@@ -42,7 +42,7 @@ public class JsonTokenizer implements UniversalConstants {
 		// escape colon
 		this.currentIndex++;
 		// escape comma
-		this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+		jumpAhead();
 		
 		return keyExtractor.toString();
 	}
@@ -79,12 +79,12 @@ public class JsonTokenizer implements UniversalConstants {
 	public String extractString() {
 		StringBuilder text = new StringBuilder();
 		
-		this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+		jumpAhead();
 		while(this.currentCharacter != QUOTE) {
 			text.append(this.currentCharacter);
-			this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+			jumpAhead();
 		}
-		this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+		jumpAhead();
 		return text.toString();
 	}
 	
@@ -92,12 +92,12 @@ public class JsonTokenizer implements UniversalConstants {
 		JsonArray array = new JsonArray();
 		int squareBraceCount = 1;
 		
-		this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+		jumpAhead();
 		while(squareBraceCount != 0) {
 			switch(this.currentCharacter) {
 				case CLOSED_SQUARE_BRACE:
 					squareBraceCount--;
-					this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+					jumpAhead();
 					break;
 				case OPEN_SQUARE_BRACE:
 					//squareBraceCount++;
@@ -110,10 +110,10 @@ public class JsonTokenizer implements UniversalConstants {
 					//array.addValue(this.extractObject());
 					break;
 				case CLOSED_CURLY_BRACE:
-					this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+					jumpAhead();
 			}
 			if(this.currentCharacter == COMMA || this.currentCharacter == COLON) {
-				this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+				jumpAhead();
 			}
 		}
 		return array;
@@ -124,16 +124,18 @@ public class JsonTokenizer implements UniversalConstants {
 		boolean curlyBraceCount = true;
 		String key = null;
 		
-		this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+		jumpAhead();
 		while(curlyBraceCount) {
+			skipSpaces();
 			if(this.currentCharacter == QUOTE) {
 				key = this.extractKey();
 			}
+			
 			switch(this.currentCharacter) {
 			case CLOSED_CURLY_BRACE:
 				curlyBraceCount = false;
 				if(this.currentIndex + 1 < this.length) {
-					this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+					jumpAhead();
 				}
 				break;
 			case OPEN_CURLY_BRACE:
@@ -146,10 +148,10 @@ public class JsonTokenizer implements UniversalConstants {
 				Json.add(key, this.extractArray());
 				break;
 			case CLOSED_SQUARE_BRACE:
-				this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+				jumpAhead();
 			}
 			if(this.currentCharacter == COMMA || this.currentCharacter == COLON) {
-				this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+				jumpAhead();
 			}
 		}
 		return Json;
@@ -176,7 +178,11 @@ public class JsonTokenizer implements UniversalConstants {
 	
 	private void skipSpaces() {
 		while(this.currentCharacter == UniversalConstants.SPACE) {
-			this.currentCharacter = this.JsonText.charAt(++this.currentIndex);
+			jumpAhead();
 		}
+	}
+	
+	private void jumpAhead() {
+		currentCharacter = this.JsonText.charAt(++this.currentIndex);
 	}
 }
