@@ -25,7 +25,7 @@ public class JsonObject implements UniversalConstants {
 			Json.put(key, value);
 		}
 		else {
-			throw new JsonException("Cannot have multiple keys with same name.");
+			throw new JsonException("Cannot have multiple keys with same name. Key:: \"" + key + "\" already present in JSON.");
 		}
 	}
 	
