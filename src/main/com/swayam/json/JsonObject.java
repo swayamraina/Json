@@ -9,13 +9,13 @@ import java.util.Map.Entry;
 public class JsonObject implements UniversalConstants {
 	
 	private Map<String,Object> Json;
-	private int JsonTextStringLength;
+	private int jsonTextStringLength;
 	private String prettyJson;
 	private String JsonText;
 	
 	public JsonObject() {
 		this.Json = new HashMap<>();
-		this.JsonTextStringLength = 0;
+		this.jsonTextStringLength = 0;
 		this.prettyJson = null;
 		this.JsonText = null;
 	}
@@ -25,7 +25,7 @@ public class JsonObject implements UniversalConstants {
 			Json.put(key, value);
 		}
 		else {
-			throw new JsonException("Cannot have multiple keys with same name");
+			throw new JsonException("Cannot have multiple keys with same name.");
 		}
 	}
 	
@@ -79,7 +79,7 @@ public class JsonObject implements UniversalConstants {
 	}
 	
 	private void setJsonTextStringLength(int length) {
-		this.JsonTextStringLength = length;
+		this.jsonTextStringLength = length;
 	}
 
 	private void setJsonText(String JsonText) {
@@ -95,70 +95,92 @@ public class JsonObject implements UniversalConstants {
 		return stringAndLength;
 	}
 	
-	public String prettify(final String JsonText) {
-		if(this.prettyJson != null) {
-			return this.prettyJson;
-		}
-		this.serialize();
+	public String prettify(final String jsonText) {
+		// if JSON object already pretty formatted
+		// return pretty version
+		if(prettyJson != null) return prettyJson;
 		
-		StringBuilder prettyJson = new StringBuilder();
+		// create JSON object for incoming request
+		serialize();
+		
+		StringBuilder prettyJsonBuilder = new StringBuilder();
 		int currentIndex = 0;
 		int tabs = 0;
-		char currentChar; 
-		char nextCharAfterQuote;
-		char nextCharAfterColon;
+		char currentChar = UniversalConstants.SPACE; 
+		char nextChar = UniversalConstants.SPACE;
+		boolean appendMode = false;
 		
-		while(currentIndex != JsonTextStringLength) {
-			currentChar = JsonText.charAt(currentIndex);
+		// start processing incoming JSON text
+		while(currentIndex != jsonTextStringLength) {
+			currentChar = jsonText.charAt(currentIndex);
+			if(appendMode) appendTabs(prettyJsonBuilder, tabs);
 			switch(currentChar) {
+				// whenever open braces token is encountered, append mode is turned "ON"
 				case OPEN_CURLY_BRACE:
 				case OPEN_SQUARE_BRACE:
-					prettyJson.append(currentChar);
-					prettyJson.append(NEWLINE);
+					prettyJsonBuilder.append(currentChar);
+					prettyJsonBuilder.append(NEWLINE);
 					tabs++;
-					this.appendTabs(prettyJson, tabs);
+					appendMode = true;
 					break;
+					
+				// on encounter with close brace token, append mode is turned "OFF"
+				// though we toggle it, if next token is a complex token i.e. '}' or ']'
 				case CLOSED_CURLY_BRACE:
 				case CLOSED_SQUARE_BRACE:
-					prettyJson.append(currentChar);
-					prettyJson.append(NEWLINE);
-					tabs--;
-					this.appendTabs(prettyJson, tabs);
+					prettyJsonBuilder.append(currentChar);
+					appendMode = false;
+					if(currentIndex+1 < jsonTextStringLength) {
+						nextChar = jsonText.charAt(currentIndex+1);
+						// turn append mode "ON"
+						if((nextChar == CLOSED_CURLY_BRACE || nextChar == CLOSED_SQUARE_BRACE)) {
+							prettyJsonBuilder.append(NEWLINE);
+							appendMode = true;
+							tabs--;
+						}
+					}
 					break;
+					
 				case COMMA:
-					prettyJson.append(SPACE);
-					prettyJson.append(currentChar);
-					prettyJson.append(NEWLINE);
-					this.appendTabs(prettyJson, tabs);
+					prettyJsonBuilder.append(SPACE);
+					prettyJsonBuilder.append(currentChar);
+					prettyJsonBuilder.append(NEWLINE);
+					appendMode = true;
 					break;
+					
 				case COLON:
-					prettyJson.append(SPACE);
-					prettyJson.append(currentChar);
-					prettyJson.append(SPACE);
-					nextCharAfterColon = JsonText.charAt(currentIndex+1);
-					if(nextCharAfterColon == OPEN_CURLY_BRACE || nextCharAfterColon == OPEN_SQUARE_BRACE) {
-						prettyJson.append(NEWLINE);
-						tabs++;
-						this.appendTabs(prettyJson, tabs);
-					}
+					prettyJsonBuilder.append(SPACE);
+					prettyJsonBuilder.append(currentChar);
+					prettyJsonBuilder.append(SPACE);
+					appendMode = false;
 					break;
+				
 				case QUOTE:
-					prettyJson.append(currentChar);
-					nextCharAfterQuote = JsonText.charAt(currentIndex+1);
-					if(nextCharAfterQuote == CLOSED_CURLY_BRACE || nextCharAfterQuote == CLOSED_SQUARE_BRACE) {
-						prettyJson.append(NEWLINE);
+					prettyJsonBuilder.append(currentChar);
+					nextChar = jsonText.charAt(currentIndex+1);
+					appendMode = false;
+					// check if this quote is ending value in JSON
+					// and toggle append mode to "ON"
+					if((nextChar == CLOSED_CURLY_BRACE || nextChar == CLOSED_SQUARE_BRACE)) {
+						prettyJsonBuilder.append(NEWLINE);
+						appendMode = true;
 						tabs--;
-						this.appendTabs(prettyJson, tabs);
 					}
 					break;
+					
 				default:
-					prettyJson.append(currentChar);
+					prettyJsonBuilder.append(currentChar);
+					appendMode = false;
 			}
+			
+			// move to next token
 			currentIndex++;
 		}
-		this.setPrettyJson(prettyJson.toString());
 		
-		return this.prettyJson;
+		// save pretty JSON for future use
+		setPrettyJson(prettyJsonBuilder.toString());
+		
+		return prettyJson;
 	}
 	
 	private void appendTabs(StringBuilder prettyJson, int tabs) {
