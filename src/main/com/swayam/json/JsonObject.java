@@ -11,13 +11,13 @@ public class JsonObject implements UniversalConstants {
 	private Map<String,Object> Json;
 	private int jsonTextStringLength;
 	private String prettyJson;
-	private String JsonText;
+	private String jsonText;
 	
 	public JsonObject() {
 		this.Json = new HashMap<>();
 		this.jsonTextStringLength = 0;
 		this.prettyJson = null;
-		this.JsonText = null;
+		this.jsonText = null;
 	}
 	
 	public void add(String key, Object value) {
@@ -30,60 +30,57 @@ public class JsonObject implements UniversalConstants {
 	}
 	
 	public String serialize() {
-		if(JsonText != null) {
-			return this.JsonText;
-		}
+		if(jsonText != null) return jsonText;
 		
-		StringBuilder JsonText = new StringBuilder();
+		StringBuilder jsonTextBuilder = new StringBuilder();
 		int lastCommaIndex = 0;
 		
-		JsonText.append(OPEN_CURLY_BRACE);
+		jsonTextBuilder.append(OPEN_CURLY_BRACE);
 		lastCommaIndex += 1;
 		for(Entry<String, Object> entry : Json.entrySet()) {
-			JsonText.append(QUOTE);
-			JsonText.append(entry.getKey());
+			jsonTextBuilder.append(QUOTE);
+			jsonTextBuilder.append(entry.getKey());
 			lastCommaIndex += entry.getKey().length();
-			JsonText.append(QUOTE);
-			JsonText.append(COLON);
+			jsonTextBuilder.append(QUOTE);
+			jsonTextBuilder.append(COLON);
 			
 			Object value = entry.getValue();
 			List<String> stringAndLength;
 			if(value instanceof JsonArray) {
 				stringAndLength = ((JsonArray) value).computeStringAndLength();
-				JsonText.append(stringAndLength.get(0));
+				jsonTextBuilder.append(stringAndLength.get(0));
 				lastCommaIndex += Integer.parseInt(stringAndLength.get(1));
 			}
 			else {
 				if(value instanceof JsonObject) {
 					stringAndLength = ((JsonObject) value).computeStringAndLength();
-					JsonText.append(stringAndLength.get(0));
+					jsonTextBuilder.append(stringAndLength.get(0));
 					lastCommaIndex += Integer.parseInt(stringAndLength.get(1));
 				}
 				else {
-					JsonText.append(QUOTE);
-					JsonText.append(value.toString());
+					if(value instanceof String) jsonTextBuilder.append(QUOTE);
+					jsonTextBuilder.append(value);
+					if(value instanceof String) jsonTextBuilder.append(QUOTE);
 					lastCommaIndex += value.toString().length();
-					JsonText.append(QUOTE);
-					lastCommaIndex += 2;
 				}
 			}
-			JsonText.append(COMMA);
+			jsonTextBuilder.append(COMMA);
 			lastCommaIndex += 4;
 		}
-		JsonText.append(CLOSED_CURLY_BRACE);
-		JsonText.deleteCharAt(lastCommaIndex-1);
+		jsonTextBuilder.append(CLOSED_CURLY_BRACE);
+		jsonTextBuilder.deleteCharAt(lastCommaIndex-1);
 		this.setJsonTextStringLength(lastCommaIndex);
-		this.setJsonText(JsonText.toString());
+		this.setJsonText(jsonTextBuilder.toString());
 		
-		return this.JsonText;
+		return jsonText;
 	}
 	
 	private void setJsonTextStringLength(int length) {
 		this.jsonTextStringLength = length;
 	}
 
-	private void setJsonText(String JsonText) {
-		this.JsonText = JsonText;
+	private void setJsonText(String jsonText) {
+		this.jsonText = jsonText;
 	}
 
 	public List<String> computeStringAndLength() {
@@ -196,6 +193,7 @@ public class JsonObject implements UniversalConstants {
 	public Object get(String key) {
 		return this.Json.get(key);
 	}
+	
 }
 
 
