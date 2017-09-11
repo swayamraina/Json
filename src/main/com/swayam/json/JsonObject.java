@@ -25,7 +25,7 @@ public class JsonObject implements UniversalConstants {
 			Json.put(key, value);
 		}
 		else {
-			throw new JsonException("Cannot have multiple keys with same name. Key:: \"" + key + "\" already present in JSON.");
+			throw new JsonException("Cannot have multiple keys with same name. Key :: \"" + key + "\" already present in JSON.");
 		}
 	}
 	
@@ -61,7 +61,7 @@ public class JsonObject implements UniversalConstants {
 					if(value instanceof String) jsonTextBuilder.append(QUOTE);
 					jsonTextBuilder.append(value);
 					if(value instanceof String) jsonTextBuilder.append(QUOTE);
-					lastCommaIndex += value.toString().length();
+					lastCommaIndex += computeLengthForPrimitives(value);
 				}
 			}
 			jsonTextBuilder.append(COMMA);
@@ -194,6 +194,10 @@ public class JsonObject implements UniversalConstants {
 		return this.Json.get(key);
 	}
 	
+	private int computeLengthForPrimitives(Object data) {
+		if(data instanceof String) return ((String) data).length()+2;
+		return String.valueOf(data).length();
+	}
 }
 
 
