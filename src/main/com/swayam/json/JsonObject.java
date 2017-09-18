@@ -8,21 +8,21 @@ import java.util.Map.Entry;
 
 public class JsonObject implements UniversalConstants {
 	
-	private Map<String,Object> Json;
+	private Map<String,Object> json;
 	private int jsonTextStringLength;
 	private String prettyJson;
 	private String jsonText;
 	
 	public JsonObject() {
-		this.Json = new HashMap<>();
+		this.json = new HashMap<>();
 		this.jsonTextStringLength = 0;
 		this.prettyJson = null;
 		this.jsonText = null;
 	}
 	
 	public void add(String key, Object value) {
-		if(Json.get(key) == null) {
-			Json.put(key, value);
+		if(json.get(key) == null) {
+			json.put(key, value);
 		}
 		else {
 			throw new JsonException("Cannot have multiple keys with same name. Key :: \"" + key + "\" already present in JSON.");
@@ -37,7 +37,7 @@ public class JsonObject implements UniversalConstants {
 		
 		jsonTextBuilder.append(OPEN_CURLY_BRACE);
 		lastCommaIndex += 1;
-		for(Entry<String, Object> entry : Json.entrySet()) {
+		for(Entry<String, Object> entry : json.entrySet()) {
 			jsonTextBuilder.append(QUOTE);
 			jsonTextBuilder.append(entry.getKey());
 			lastCommaIndex += entry.getKey().length();
@@ -191,10 +191,14 @@ public class JsonObject implements UniversalConstants {
 	}
 	
 	public Object get(String key) {
-		return this.Json.get(key);
+		return json.get(key);
 	}
 	
-	private int computeLengthForPrimitives(Object data) {
+	public Map<String,Object> getJson() {
+		return this.json;
+	}
+	
+	public static int computeLengthForPrimitives(Object data) {
 		if(data instanceof String) return ((String) data).length()+2;
 		return String.valueOf(data).length();
 	}
