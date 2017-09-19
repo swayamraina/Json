@@ -2,7 +2,7 @@ package main.com.swayam.json;
 
 public class JsonTokenizer implements UniversalConstants {
 	
-	private String JsonText;
+	private String jsonText;
 	private int currentIndex;
 	private int length;
 	private char currentCharacter;
@@ -10,7 +10,7 @@ public class JsonTokenizer implements UniversalConstants {
 	public JsonTokenizer() {
 		this.currentIndex = 0;
 		this.length = 0;
-		this.currentCharacter = ' ';
+		this.currentCharacter = UniversalConstants.SPACE;
 	}
 	
 	public JsonObject tokenize(final String JsonText) {
@@ -37,7 +37,7 @@ public class JsonTokenizer implements UniversalConstants {
 					keyExtractor.append(currentCharacter);
 				}
 			}
-			currentCharacter = this.JsonText.charAt(++this.currentIndex);
+			currentCharacter = jsonText.charAt(++this.currentIndex);
 		}
 		// escape colon
 		this.currentIndex++;
@@ -51,10 +51,10 @@ public class JsonTokenizer implements UniversalConstants {
 		StringBuilder stack = new StringBuilder();
 		int stackSize = 0;
 		char currentChar;
-		this.length = this.JsonText.length();
+		this.length = jsonText.length();
 		
 		for(int i=0;i<this.length;i++) {
-			currentChar = this.JsonText.charAt(i);
+			currentChar = jsonText.charAt(i);
 			if(currentChar == OPEN_CURLY_BRACE || currentChar == OPEN_SQUARE_BRACE) {
 				stack.append(currentChar);
 				stackSize++;
@@ -120,7 +120,7 @@ public class JsonTokenizer implements UniversalConstants {
 	}
 	
 	public JsonObject extractObject() {
-		JsonObject Json = new JsonObject();
+		JsonObject json = new JsonObject();
 		boolean curlyBraceCount = true;
 		String key = null;
 		
@@ -139,13 +139,13 @@ public class JsonTokenizer implements UniversalConstants {
 				}
 				break;
 			case OPEN_CURLY_BRACE:
-				Json.add(key, this.extractObject());
+				json.add(key, this.extractObject());
 				break;
 			case QUOTE:
-				Json.add(key, this.extractString());
+				json.add(key, this.extractString());
 				break;
 			case OPEN_SQUARE_BRACE:
-				Json.add(key, this.extractArray());
+				json.add(key, this.extractArray());
 				break;
 			case CLOSED_SQUARE_BRACE:
 				jumpAhead();
@@ -154,11 +154,11 @@ public class JsonTokenizer implements UniversalConstants {
 				jumpAhead();
 			}
 		}
-		return Json;
+		return json;
 	}
 	
-	public void setJsonText(String JsonText) {
-		this.JsonText = JsonText;
+	public void setJsonText(String jsonText) {
+		this.jsonText = jsonText;
 	}
 	
 	public char mirrorOf(char c) {
@@ -172,7 +172,7 @@ public class JsonTokenizer implements UniversalConstants {
 			case CLOSED_SQUARE_BRACE:
 				return OPEN_SQUARE_BRACE;
 			default:
-				return ' ';
+				return UniversalConstants.SPACE;
 		}
 	}
 	
@@ -183,6 +183,6 @@ public class JsonTokenizer implements UniversalConstants {
 	}
 	
 	private void jumpAhead() {
-		currentCharacter = this.JsonText.charAt(++this.currentIndex);
+		currentCharacter = jsonText.charAt(++this.currentIndex);
 	}
 }
