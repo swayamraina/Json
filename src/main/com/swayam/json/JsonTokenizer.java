@@ -174,10 +174,10 @@ public class JsonTokenizer implements UniversalConstants {
 	}
 	
 	private void jumpAhead() {
-		currentCharacter = jsonText.charAt(++this.currentIndex);
+		currentCharacter = jsonText.charAt(++currentIndex);
 	}
 	
 	private char lookBack() {
-		return (currentIndex > 1) ? jsonText.charAt(currentIndex-1) : SPACE;
+		return (currentIndex > 0 && currentIndex < length) ? jsonText.charAt(currentIndex-1) : SPACE;
 	}
 }
