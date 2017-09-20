@@ -10,7 +10,7 @@ public class JsonTokenizer implements UniversalConstants {
 	public JsonTokenizer() {
 		this.currentIndex = 0;
 		this.length = 0;
-		this.currentCharacter = UniversalConstants.SPACE;
+		this.currentCharacter = SPACE;
 	}
 	
 	public JsonObject tokenize(final String JsonText) {
@@ -22,26 +22,17 @@ public class JsonTokenizer implements UniversalConstants {
 	}
 	
 	public String extractKey() {
-		boolean startExpression = true;
 		StringBuilder keyExtractor = new StringBuilder();
-		
-		while(true) {
-			if(currentCharacter == QUOTE && startExpression) {
-				startExpression = false;
-			}
-			else {
-				if(currentCharacter == QUOTE && !startExpression) {
-					break;
-				}
-				else {
-					keyExtractor.append(currentCharacter);
-				}
-			}
-			currentCharacter = jsonText.charAt(++this.currentIndex);
+		// skip opening quote token
+		jumpAhead();
+		while(currentCharacter!=QUOTE && lookBack()!=BACKSLASH) {
+			keyExtractor.append(currentCharacter);
+			jumpAhead();
 		}
-		// escape colon
+		skipSpaces();
+		// escape ':'
 		this.currentIndex++;
-		// escape comma
+		// escape ','
 		jumpAhead();
 		
 		return keyExtractor.toString();
@@ -172,17 +163,21 @@ public class JsonTokenizer implements UniversalConstants {
 			case CLOSED_SQUARE_BRACE:
 				return OPEN_SQUARE_BRACE;
 			default:
-				return UniversalConstants.SPACE;
+				return SPACE;
 		}
 	}
 	
 	private void skipSpaces() {
-		while(this.currentCharacter == UniversalConstants.SPACE) {
+		while(this.currentCharacter == SPACE) {
 			jumpAhead();
 		}
 	}
 	
 	private void jumpAhead() {
 		currentCharacter = jsonText.charAt(++this.currentIndex);
+	}
+	
+	private char lookBack() {
+		return (currentIndex > 1) ? jsonText.charAt(currentIndex-1) : SPACE;
 	}
 }

@@ -12,6 +12,7 @@ public interface UniversalConstants {
 	static final char SPACE = ' ';
 	static final char NEWLINE = '\n';
 	static final char TAB = '\t';
+	static final char BACKSLASH = '\\';
 
 }
 
