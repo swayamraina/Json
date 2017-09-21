@@ -10,21 +10,28 @@ import main.com.swayam.json.JsonTokenizer;
 public class JsonTokenizerTest {
 
 	@Test
-	public void testTokenize1() {
+	public void testTokenizeWithNormalJson() {
 		String text = "{\"name\":\"swayam\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
 	}
 	
 	@Test
-	public void testTokenize2() {
+	public void testTokenizeWithArrayJson() {
+		String text = "{\"name\":[\"swayam\",\"jayesh\",\"gokul\",\"rahul\"]}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify(text));
+	}
+	
+	@Test
+	public void testTokenizeWithObject() {
 		String text = "{\"id\":\"12345\",\"name\":{\"first\":\"swayam\",\"last\":\"raina\"},\"level\":\"advanced\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
 	}
 	
 	@Test
-	public void testTokenize3() {
+	public void testTokenizeWithRecursiveObjects() {
 		String text = "{\"name\":{\"last\":{\"name\":\"raina\"}},\"level\":\"advanced\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
@@ -45,6 +52,13 @@ public class JsonTokenizerTest {
 		assertEquals(4, JsonObject.computeLengthForPrimitives(o));
 		o = t4;
 		assertEquals(7, JsonObject.computeLengthForPrimitives(o));
+	}
+	
+	@Test
+	public void testTokenizeWithRecursiveArray() {
+		String text = "{\"roomamtes\":[[\"swayam\", \"gokul\"],[\"jayesh\"],[\"rahul\"]]}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify(text));
 	}
 	
 }
