@@ -111,41 +111,52 @@ public class JsonTokenizer implements UniversalConstants {
 	}
 	
 	public JsonObject extractObject() {
-		JsonObject json = new JsonObject();
-		boolean curlyBraceCount = true;
+		JsonObject internalJson = new JsonObject();
+		boolean objectNotParsed = true;
 		String key = null;
 		
+		// skip '{' token
 		jumpAhead();
-		while(curlyBraceCount) {
+		
+		// start parsing tokens
+		while(objectNotParsed) {
 			skipSpaces();
 			if(this.currentCharacter == QUOTE) {
 				key = this.extractKey();
 			}
 			
 			switch(this.currentCharacter) {
-			case CLOSED_CURLY_BRACE:
-				curlyBraceCount = false;
-				if(this.currentIndex + 1 < this.length) {
+				case CLOSED_CURLY_BRACE:
+					objectNotParsed = false;
+					if(this.currentIndex + 1 < this.length) {
+						jumpAhead();
+					}
+					break;
+					
+				case OPEN_CURLY_BRACE:
+					internalJson.add(key, this.extractObject());
+					break;
+					
+				case QUOTE:
+					internalJson.add(key, this.extractString());
+					break;
+					
+				case OPEN_SQUARE_BRACE:
+					internalJson.add(key, this.extractArray());
+					break;
+					
+				case CLOSED_SQUARE_BRACE:
 					jumpAhead();
-				}
-				break;
-			case OPEN_CURLY_BRACE:
-				json.add(key, this.extractObject());
-				break;
-			case QUOTE:
-				json.add(key, this.extractString());
-				break;
-			case OPEN_SQUARE_BRACE:
-				json.add(key, this.extractArray());
-				break;
-			case CLOSED_SQUARE_BRACE:
-				jumpAhead();
+					break;
+					
 			}
+			
+			// skip additional tokens
 			if(this.currentCharacter == COMMA || this.currentCharacter == COLON) {
 				jumpAhead();
 			}
 		}
-		return json;
+		return internalJson;
 	}
 	
 	public void setJsonText(String jsonText) {
