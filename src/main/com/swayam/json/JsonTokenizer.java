@@ -13,11 +13,11 @@ public class JsonTokenizer implements UniversalConstants {
 		this.currentCharacter = SPACE;
 	}
 	
-	public JsonObject tokenize(final String JsonText) {
-		this.setJsonText(JsonText);
-		if(!validJson()) {
-			throw new JsonException("Parsing Error : Invalid Json format.");
-		}
+	public JsonObject tokenize(final String jsonText) {
+		this.setJsonText(jsonText);
+		if(!validJson()) throw new JsonException("Parsing Error : Invalid Json format.");
+		
+		// if valid, parse the JSON
 		return this.extractObject();
 	}
 	
