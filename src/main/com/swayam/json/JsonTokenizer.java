@@ -81,28 +81,38 @@ public class JsonTokenizer implements UniversalConstants {
 	
 	public JsonArray extractArray() {
 		JsonArray array = new JsonArray();
-		int squareBraceCount = 1;
+		boolean objectNotParsed = true;
 		
+		// skip '{' token
 		jumpAhead();
-		while(squareBraceCount != 0) {
+		
+		// start parsing tokens
+		while(objectNotParsed) {
+			skipSpaces();
 			switch(this.currentCharacter) {
 				case CLOSED_SQUARE_BRACE:
-					squareBraceCount--;
+					objectNotParsed = false;
 					jumpAhead();
 					break;
+					
 				case OPEN_SQUARE_BRACE:
-					//squareBraceCount++;
 					array.addValue(this.extractArray());
 					break;
+					
 				case QUOTE:
 					array.addValue(this.extractString());
 					break;
+					
 				case OPEN_CURLY_BRACE:
 					//array.addValue(this.extractObject());
 					break;
+					
 				case CLOSED_CURLY_BRACE:
 					jumpAhead();
+					break;
 			}
+			
+			// skip additional tokens
 			if(this.currentCharacter == COMMA || this.currentCharacter == COLON) {
 				jumpAhead();
 			}
