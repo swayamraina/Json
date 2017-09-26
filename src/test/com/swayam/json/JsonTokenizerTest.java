@@ -14,6 +14,7 @@ public class JsonTokenizerTest {
 		String text = "{\"name\":\"swayam\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
+		System.out.println();
 	}
 	
 	@Test
@@ -21,6 +22,7 @@ public class JsonTokenizerTest {
 		String text = "{\"name\":[\"swayam\",\"jayesh\",\"gokul\",\"rahul\"]}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
+		System.out.println();
 	}
 	
 	@Test
@@ -28,6 +30,7 @@ public class JsonTokenizerTest {
 		String text = "{\"id\":\"12345\",\"name\":{\"first\":\"swayam\",\"last\":\"raina\"},\"level\":\"advanced\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
+		System.out.println();
 	}
 	
 	@Test
@@ -35,6 +38,7 @@ public class JsonTokenizerTest {
 		String text = "{\"name\":{\"last\":{\"name\":\"raina\"}},\"level\":\"advanced\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
+		System.out.println();
 	}
 	
 	@Test
@@ -59,7 +63,47 @@ public class JsonTokenizerTest {
 		String text = "{\"roomamtes\":[[\"swayam\", \"gokul\"],[\"jayesh\"],[\"rahul\"]]}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify(text));
+		System.out.println();
 	}
 	
+	@Test
+	public void testFloatPrimitiveInJson() {
+		String text = "{\"cost\": 100.00}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify(text));
+		System.out.println();
+	}
+	
+	@Test
+	public void testIntegerPrimitiveInJson() {
+		String text = "{\"age\" : 23}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify(text));
+		System.out.println();
+	}
+	
+	@Test
+	public void testTruePrimitiveInJson() {
+		String text = "{\"eligible\": true}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify(text));
+		System.out.println();
+	}
+	
+	@Test
+	public void testFalsePrimitiveInJson() {
+		String text = "{\"eligible\": false }";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify(text));
+		System.out.println();
+	}
+	
+	@Test
+	public void testNullPrimitiveInJson() {
+		String text = "{\"class\":null}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify(text));
+		System.out.println();
+	}
 }
 
