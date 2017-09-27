@@ -13,7 +13,7 @@ public class JsonTokenizerTest {
 	public void testTokenizeWithNormalJson() {
 		String text = "{\"name\":\"swayam\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -21,7 +21,7 @@ public class JsonTokenizerTest {
 	public void testTokenizeWithArrayJson() {
 		String text = "{\"name\":[\"swayam\",\"jayesh\",\"gokul\",\"rahul\"]}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -29,7 +29,7 @@ public class JsonTokenizerTest {
 	public void testTokenizeWithObject() {
 		String text = "{\"id\":\"12345\",\"name\":{\"first\":\"swayam\",\"last\":\"raina\"},\"level\":\"advanced\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -37,7 +37,7 @@ public class JsonTokenizerTest {
 	public void testTokenizeWithRecursiveObjects() {
 		String text = "{\"name\":{\"last\":{\"name\":\"raina\"}},\"level\":\"advanced\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -62,7 +62,7 @@ public class JsonTokenizerTest {
 	public void testTokenizeWithRecursiveArray() {
 		String text = "{\"roomamtes\":[[\"swayam\", \"gokul\"],[\"jayesh\"],[\"rahul\"]]}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -70,7 +70,7 @@ public class JsonTokenizerTest {
 	public void testFloatPrimitiveInJson() {
 		String text = "{\"cost\": 100.00}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -78,7 +78,7 @@ public class JsonTokenizerTest {
 	public void testIntegerPrimitiveInJson() {
 		String text = "{\"age\" : 23}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -86,7 +86,7 @@ public class JsonTokenizerTest {
 	public void testTruePrimitiveInJson() {
 		String text = "{\"eligible\": true}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -94,7 +94,7 @@ public class JsonTokenizerTest {
 	public void testFalsePrimitiveInJson() {
 		String text = "{\"eligible\": false }";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 	
@@ -102,7 +102,7 @@ public class JsonTokenizerTest {
 	public void testNullPrimitiveInJson() {
 		String text = "{\"class\":null}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
-		System.out.println(json.prettify(text));
+		System.out.println(json.prettify());
 		System.out.println();
 	}
 }
