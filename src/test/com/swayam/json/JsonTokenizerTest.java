@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import org.junit.Test;
 
+import main.com.swayam.json.JsonException;
 import main.com.swayam.json.JsonObject;
 import main.com.swayam.json.JsonTokenizer;
 
@@ -83,8 +84,48 @@ public class JsonTokenizerTest {
 	}
 	
 	@Test
+	public void testNegativeIntegerPrimitiveInJson() {
+		String text = "{\"loss percent\" : -23}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+		System.out.println();
+	}
+	
+	@Test(expected = JsonException.class)
+	public void testIntegerPrimitiveInJsonNegative() {
+		String text = "{\"age\" : 23f}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+		System.out.println();
+	}
+	
+	@Test(expected = JsonException.class)
+	public void testNegativeIntegerPrimitiveInJsonNegative() {
+		String text = "{\"age\" : -23f}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+		System.out.println();
+	}
+	
+	@Test
 	public void testTruePrimitiveInJson() {
 		String text = "{\"eligible\": true}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+		System.out.println();
+	}
+	
+	@Test(expected = JsonException.class)
+	public void testIncorrectTruePrimitiveInJson() {
+		String text = "{\"eligible\": -true}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+		System.out.println();
+	}
+	
+	@Test(expected = JsonException.class)
+	public void testInvalidStringPrimitiveInJsonNegative() {
+		String text = "{\"eligible\": truea}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
@@ -105,5 +146,7 @@ public class JsonTokenizerTest {
 		System.out.println(json.prettify());
 		System.out.println();
 	}
+	
+	
 }
 
