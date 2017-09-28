@@ -92,13 +92,13 @@ public class JsonObject implements UniversalConstants {
 		return stringAndLength;
 	}
 	
-	public String prettify(final String jsonText) {
+	public String prettify() {
 		// if JSON object already pretty formatted
 		// return pretty version
 		if(prettyJson != null) return prettyJson;
 		
 		// create JSON object for incoming request
-		serialize();
+		if(jsonText == null) serialize();
 		
 		StringBuilder prettyJsonBuilder = new StringBuilder();
 		int currentIndex = 0;
@@ -152,22 +152,18 @@ public class JsonObject implements UniversalConstants {
 					appendMode = false;
 					break;
 				
-				case QUOTE:
+				default:
 					prettyJsonBuilder.append(currentChar);
 					nextChar = jsonText.charAt(currentIndex+1);
 					appendMode = false;
-					// check if this quote is ending value in JSON
-					// and toggle append mode to "ON"
+					// check if current character is ending value in JSON
+					// if yes, toggle append mode to "ON"
 					if((nextChar == CLOSED_CURLY_BRACE || nextChar == CLOSED_SQUARE_BRACE)) {
 						prettyJsonBuilder.append(NEWLINE);
 						appendMode = true;
 						tabs--;
 					}
 					break;
-					
-				default:
-					prettyJsonBuilder.append(currentChar);
-					appendMode = false;
 			}
 			
 			// move to next token
