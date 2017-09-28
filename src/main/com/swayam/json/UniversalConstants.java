@@ -13,6 +13,10 @@ public interface UniversalConstants {
 	static final char NEWLINE = '\n';
 	static final char TAB = '\t';
 	static final char BACKSLASH = '\\';
+	static final char DOT = '.';
+	static final String TRUE = "true";
+	static final String FALSE = "false";
+	static final String NULL = "null";
 
 }
 

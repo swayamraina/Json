@@ -25,15 +25,20 @@ public class JsonTokenizer implements UniversalConstants {
 		StringBuilder keyExtractor = new StringBuilder();
 		// skip opening quote token
 		jumpAhead();
+		
+		skipSpaces();
 		while(currentCharacter!=QUOTE && lookBack()!=BACKSLASH) {
 			keyExtractor.append(currentCharacter);
 			jumpAhead();
 		}
 		skipSpaces();
-		// escape ':'
-		this.currentIndex++;
-		// escape ','
+		
+		// escape ' " '
 		jumpAhead();
+		skipSpaces();
+		// escape ':'
+		jumpAhead();
+		skipSpaces();
 		
 		return keyExtractor.toString();
 	}
@@ -159,6 +164,9 @@ public class JsonTokenizer implements UniversalConstants {
 					jumpAhead();
 					break;
 					
+				default:
+					if(!validStartForPrimitive(this.currentCharacter)) throw new JsonException("Parsing Error : Invalid Json format.");
+					internalJson.add(key, this.extractPrimitive());
 			}
 			
 			// skip additional tokens
@@ -200,5 +208,44 @@ public class JsonTokenizer implements UniversalConstants {
 	
 	private char lookBack() {
 		return (currentIndex > 0 && currentIndex < length) ? jsonText.charAt(currentIndex-1) : SPACE;
+	}
+	
+	private boolean validStartForPrimitive(char token) {
+		int intToken = (int) token;
+		if(intToken==43 || intToken==45 || 
+				intToken==110 || intToken==102 || intToken==116 || 
+					(intToken>=48 && intToken<=57)) {
+			
+			return true;
+		}
+		return false;
+	}
+	
+	private Object extractPrimitive() {
+		boolean isNumeric = false;
+		boolean isFloat = false;
+		String primitiveToken;
+		int intToken;
+		StringBuilder primitiveBuilder = new StringBuilder();
+		while(this.currentCharacter != SPACE && this.currentCharacter != COMMA && this.currentCharacter != CLOSED_CURLY_BRACE && this.currentCharacter != CLOSED_SQUARE_BRACE) {
+			if(this.currentCharacter == DOT) { 
+				if(isFloat) throw new JsonException("Parsing Error : Invalid Json format.");
+				isFloat = true;
+			}
+			intToken = (int) this.currentCharacter;
+			if(intToken >= 48 && intToken <= 57) isNumeric = true;
+			if((intToken==110 || intToken==102 || intToken==116) && isNumeric) throw new JsonException("Parsing Error : Invalid Json format.");
+			primitiveBuilder.append(this.currentCharacter);
+			jumpAhead();
+		}
+		primitiveToken = primitiveBuilder.toString();
+		
+		if(isFloat) return new Float(primitiveToken);
+		if(isNumeric) return new Integer(primitiveToken);
+		if(primitiveToken.equals(TRUE)) return true;
+		if(primitiveToken.equals(FALSE)) return false;
+		if(primitiveToken.equals(NULL)) return null;
+		
+		throw new JsonException("Parsing Error : Invalid Json format.");
 	}
 }
