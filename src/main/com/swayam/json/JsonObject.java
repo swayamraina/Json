@@ -198,6 +198,82 @@ public class JsonObject implements UniversalConstants {
 		if(data instanceof String) return ((String) data).length()+2;
 		return String.valueOf(data).length();
 	}
+	
+	public static String prettify(final String jsonText) {
+		StringBuilder prettyJsonBuilder = new StringBuilder();
+		int currentIndex = 0;
+		int tabs = 0;
+		char currentChar = UniversalConstants.SPACE; 
+		char nextChar = UniversalConstants.SPACE;
+		boolean appendMode = false;
+		
+		// start processing incoming JSON text
+		while(currentIndex != jsonText.length()) {
+			currentChar = jsonText.charAt(currentIndex);
+			// TODO : update below code, this can be better
+			if(appendMode) new JsonObject().appendTabs(prettyJsonBuilder, tabs);
+			switch(currentChar) {
+				// whenever open braces token is encountered, append mode is turned "ON"
+				case OPEN_CURLY_BRACE:
+				case OPEN_SQUARE_BRACE:
+					prettyJsonBuilder.append(currentChar);
+					prettyJsonBuilder.append(NEWLINE);
+					tabs++;
+					appendMode = true;
+					break;
+					
+				// on encounter with close brace token, append mode is turned "OFF"
+				// though we toggle it, if next token is a complex token i.e. '}' or ']'
+				case CLOSED_CURLY_BRACE:
+				case CLOSED_SQUARE_BRACE:
+					prettyJsonBuilder.append(currentChar);
+					appendMode = false;
+					if(currentIndex+1 < jsonText.length()) {
+						nextChar = jsonText.charAt(currentIndex+1);
+						// turn append mode "ON"
+						if((nextChar == CLOSED_CURLY_BRACE || nextChar == CLOSED_SQUARE_BRACE)) {
+							prettyJsonBuilder.append(NEWLINE);
+							appendMode = true;
+							tabs--;
+						}
+					}
+					break;
+					
+				case COMMA:
+					prettyJsonBuilder.append(SPACE);
+					prettyJsonBuilder.append(currentChar);
+					prettyJsonBuilder.append(NEWLINE);
+					appendMode = true;
+					break;
+					
+				case COLON:
+					prettyJsonBuilder.append(SPACE);
+					prettyJsonBuilder.append(currentChar);
+					prettyJsonBuilder.append(SPACE);
+					appendMode = false;
+					break;
+				
+				default:
+					prettyJsonBuilder.append(currentChar);
+					nextChar = jsonText.charAt(currentIndex+1);
+					appendMode = false;
+					// check if current character is ending value in JSON
+					// if yes, toggle append mode to "ON"
+					if((nextChar == CLOSED_CURLY_BRACE || nextChar == CLOSED_SQUARE_BRACE)) {
+						prettyJsonBuilder.append(NEWLINE);
+						appendMode = true;
+						tabs--;
+					}
+					break;
+			}
+			
+			// move to next token
+			currentIndex++;
+		}
+		
+		return prettyJsonBuilder.toString();
+	}
+	
 }
 
 
