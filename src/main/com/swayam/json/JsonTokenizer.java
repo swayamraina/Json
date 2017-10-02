@@ -2,54 +2,50 @@ package main.com.swayam.json;
 
 public class JsonTokenizer implements UniversalConstants {
 	
-	private String jsonText;
 	private int currentIndex;
-	private int length;
 	private char currentCharacter;
 	
 	public JsonTokenizer() {
 		this.currentIndex = 0;
-		this.length = 0;
 		this.currentCharacter = SPACE;
 	}
 	
 	public JsonObject tokenize(final String jsonText) {
-		this.setJsonText(jsonText);
-		if(!validJson()) throw new JsonException("Parsing Error : Invalid Json format.");
+		if(!validJson(jsonText)) throw new JsonException("Parsing Error : Invalid Json format.");
 		
 		// if valid, parse the JSON
-		return this.extractObject();
+		return this.extractObject(jsonText);
 	}
 	
-	public String extractKey() {
+	public String extractKey(final String jsonText) {
 		StringBuilder keyExtractor = new StringBuilder();
 		// skip opening quote token
-		jumpAhead();
+		jumpAhead(jsonText, 1);
 		
-		skipSpaces();
-		while(currentCharacter!=QUOTE && lookBack()!=BACKSLASH) {
+		skipSpaces(jsonText);
+		while(currentCharacter!=QUOTE && lookBack(jsonText)!=BACKSLASH) {
 			keyExtractor.append(currentCharacter);
-			jumpAhead();
+			jumpAhead(jsonText, 1);
 		}
-		skipSpaces();
+		skipSpaces(jsonText);
 		
 		// escape ' " '
-		jumpAhead();
-		skipSpaces();
+		jumpAhead(jsonText, 1);
+		skipSpaces(jsonText);
 		// escape ':'
-		jumpAhead();
-		skipSpaces();
+		jumpAhead(jsonText, 1);
+		skipSpaces(jsonText);
 		
 		return keyExtractor.toString();
 	}
 	
-	public boolean validJson() {
+	public boolean validJson(final String jsonText) {
 		StringBuilder stack = new StringBuilder();
 		int stackSize = 0;
 		char currentChar;
-		this.length = jsonText.length();
+		int length = jsonText.length();
 		
-		for(int i=0;i<this.length;i++) {
+		for(int i=0; i<length; i++) {
 			currentChar = jsonText.charAt(i);
 			if(currentChar == OPEN_CURLY_BRACE || currentChar == OPEN_SQUARE_BRACE) {
 				stack.append(currentChar);
@@ -72,40 +68,40 @@ public class JsonTokenizer implements UniversalConstants {
 		return true;
 	}
 	
-	public String extractString() {
+	public String extractString(final String jsonText) {
 		StringBuilder text = new StringBuilder();
 		
-		jumpAhead();
+		jumpAhead(jsonText, 1);
 		while(this.currentCharacter != QUOTE) {
 			text.append(this.currentCharacter);
-			jumpAhead();
+			jumpAhead(jsonText, 1);
 		}
-		jumpAhead();
+		jumpAhead(jsonText, 1);
 		return text.toString();
 	}
 	
-	public JsonArray extractArray() {
+	public JsonArray extractArray(final String jsonText) {
 		JsonArray array = new JsonArray();
 		boolean objectNotParsed = true;
 		
 		// skip '{' token
-		jumpAhead();
+		jumpAhead(jsonText, 1);
 		
 		// start parsing tokens
 		while(objectNotParsed) {
-			skipSpaces();
+			skipSpaces(jsonText);
 			switch(this.currentCharacter) {
 				case CLOSED_SQUARE_BRACE:
 					objectNotParsed = false;
-					jumpAhead();
+					jumpAhead(jsonText, 1);
 					break;
 					
 				case OPEN_SQUARE_BRACE:
-					array.addValue(this.extractArray());
+					array.addValue(this.extractArray(jsonText));
 					break;
 					
 				case QUOTE:
-					array.addValue(this.extractString());
+					array.addValue(this.extractString(jsonText));
 					break;
 					
 				case OPEN_CURLY_BRACE:
@@ -113,72 +109,68 @@ public class JsonTokenizer implements UniversalConstants {
 					break;
 					
 				case CLOSED_CURLY_BRACE:
-					jumpAhead();
+					jumpAhead(jsonText, 1);
 					break;
 			}
 			
 			// skip additional tokens
 			if(this.currentCharacter == COMMA || this.currentCharacter == COLON) {
-				jumpAhead();
+				jumpAhead(jsonText, 1);
 			}
 		}
 		return array;
 	}
 	
-	public JsonObject extractObject() {
+	public JsonObject extractObject(final String jsonText) {
 		JsonObject internalJson = new JsonObject();
 		boolean objectNotParsed = true;
 		String key = null;
 		
 		// skip '{' token
-		jumpAhead();
+		jumpAhead(jsonText, 1);
 		
 		// start parsing tokens
 		while(objectNotParsed) {
-			skipSpaces();
+			skipSpaces(jsonText);
 			if(this.currentCharacter == QUOTE) {
-				key = this.extractKey();
+				key = this.extractKey(jsonText);
 			}
 			
 			switch(this.currentCharacter) {
 				case CLOSED_CURLY_BRACE:
 					objectNotParsed = false;
-					if(this.currentIndex + 1 < this.length) {
-						jumpAhead();
+					if(this.currentIndex + 1 < jsonText.length()) {
+						jumpAhead(jsonText, 1);
 					}
 					break;
 					
 				case OPEN_CURLY_BRACE:
-					internalJson.add(key, this.extractObject());
+					internalJson.add(key, this.extractObject(jsonText));
 					break;
 					
 				case QUOTE:
-					internalJson.add(key, this.extractString());
+					internalJson.add(key, this.extractString(jsonText));
 					break;
 					
 				case OPEN_SQUARE_BRACE:
-					internalJson.add(key, this.extractArray());
+					internalJson.add(key, this.extractArray(jsonText));
 					break;
 					
 				case CLOSED_SQUARE_BRACE:
-					jumpAhead();
+					jumpAhead(jsonText, 1);
 					break;
 					
 				default:
 					if(!validStartForPrimitive(this.currentCharacter)) throw new JsonException("Parsing Error : Invalid Json format.");
-					internalJson.add(key, this.extractPrimitive());
+					internalJson.add(key, this.extractPrimitive(jsonText));
 			}
 			
 			// skip additional tokens
 			if(this.currentCharacter == COMMA || this.currentCharacter == COLON) {
-				jumpAhead();
+				jumpAhead(jsonText, 1);
 			}
 		}
 		return internalJson;
-	}
-	
-	public void setJsonText(String jsonText) {
-		this.jsonText = jsonText;
 	}
 	
 	public char mirrorOf(char c) {
@@ -196,18 +188,20 @@ public class JsonTokenizer implements UniversalConstants {
 		}
 	}
 	
-	private void skipSpaces() {
+	private void skipSpaces(final String jsonText) {
 		while(this.currentCharacter == SPACE) {
-			jumpAhead();
+			jumpAhead(jsonText, 1);
 		}
 	}
 	
-	private void jumpAhead() {
-		currentCharacter = jsonText.charAt(++currentIndex);
+	private void jumpAhead(final String jsonText, int jumps) {
+		for(int i=1; i<=jumps; i++) {
+			currentCharacter = jsonText.charAt(++currentIndex);
+		}
 	}
 	
-	private char lookBack() {
-		return (currentIndex > 0 && currentIndex < length) ? jsonText.charAt(currentIndex-1) : SPACE;
+	private char lookBack(final String jsonText) {
+		return (currentIndex > 0 && currentIndex < jsonText.length()) ? jsonText.charAt(currentIndex-1) : SPACE;
 	}
 	
 	private boolean validStartForPrimitive(char token) {
@@ -221,7 +215,7 @@ public class JsonTokenizer implements UniversalConstants {
 		return false;
 	}
 	
-	private Object extractPrimitive() {
+	private Object extractPrimitive(final String jsonText) {
 		boolean isNumeric = false;
 		boolean isFloat = false;
 		String primitiveToken;
@@ -236,7 +230,7 @@ public class JsonTokenizer implements UniversalConstants {
 			if(intToken >= 48 && intToken <= 57) isNumeric = true;
 			if((intToken==110 || intToken==102 || intToken==116) && isNumeric) throw new JsonException("Parsing Error : Invalid Json format.");
 			primitiveBuilder.append(this.currentCharacter);
-			jumpAhead();
+			jumpAhead(jsonText, 1);
 		}
 		primitiveToken = primitiveBuilder.toString();
 		
