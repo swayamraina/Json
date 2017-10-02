@@ -155,5 +155,22 @@ public class JsonTokenizerTest {
 		System.out.println();
 	}
 	
+	@Test
+	public void testStandAlonePrettify() {
+		String text = "{\"class\":[{\"roll1\":{\"fname\":\"swayam\",\"lname\":\"raina\"}},{\"roll2\":{\"fname\":\"ujjwal\",\"lname\":\"raina\"}}],\"total\":2}";
+		System.out.println(JsonObject.prettify(text));
+		System.out.println();
+	}
+	
+	@Test
+	public void compareStandAlonePrettify() {
+		String text = "{\"total\":2,\"class\":[{\"roll1\":{\"fname\":\"swayam\",\"lname\":\"raina\"}},{\"roll2\":{\"fname\":\"ujjwal\",\"lname\":\"raina\"}}]}";
+		String standAlone = JsonObject.prettify(text);
+		String dependent = new JsonTokenizer().tokenize(text).prettify();
+		// may fail because tokenizer internally changes
+		// the ordering of the inner elements
+		assertEquals(dependent, standAlone);
+	}
+	
 }
 
