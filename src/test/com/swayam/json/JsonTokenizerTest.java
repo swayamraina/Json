@@ -147,6 +147,13 @@ public class JsonTokenizerTest {
 		System.out.println();
 	}
 	
+	@Test
+	public void testObjectsInArray() {
+		String text = "{\"class\":[{\"roll1\":{\"fname\":\"swayam\",\"lname\":\"raina\"}},{\"roll2\":{\"fname\":\"ujjwal\",\"lname\":\"raina\"}}],\"total\":2}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+		System.out.println();
+	}
 	
 }
 
