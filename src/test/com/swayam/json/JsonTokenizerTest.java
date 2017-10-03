@@ -172,5 +172,12 @@ public class JsonTokenizerTest {
 		assertEquals(dependent, standAlone);
 	}
 	
+	@Test
+	public void testJsonArrayWithPrimitives() {
+		String text = "{\"numbers\": [1,2,3,4,5,6,7,8,9] }";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+	}
+	
 }
 
