@@ -111,6 +111,9 @@ public class JsonTokenizer implements UniversalConstants {
 				case CLOSED_CURLY_BRACE:
 					jumpAhead(jsonText, 1);
 					break;
+					
+				default:
+					array.addValue(this.extractPrimitive(jsonText));
 			}
 			
 			// skip additional tokens
