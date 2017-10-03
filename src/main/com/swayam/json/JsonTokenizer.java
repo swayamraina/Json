@@ -161,7 +161,9 @@ public class JsonTokenizer implements UniversalConstants {
 					break;
 					
 				default:
-					if(!validStartForPrimitive(this.currentCharacter)) throw new JsonException("Parsing Error : Invalid Json format.");
+					if(!validStartForPrimitive(this.currentCharacter)) {
+						throw new JsonException("Parsing Error : Invalid value type.\nError at index " + this.currentIndex+1);
+					}
 					internalJson.add(key, this.extractPrimitive(jsonText));
 			}
 			
@@ -223,12 +225,16 @@ public class JsonTokenizer implements UniversalConstants {
 		StringBuilder primitiveBuilder = new StringBuilder();
 		while(this.currentCharacter != SPACE && this.currentCharacter != COMMA && this.currentCharacter != CLOSED_CURLY_BRACE && this.currentCharacter != CLOSED_SQUARE_BRACE) {
 			if(this.currentCharacter == DOT) { 
-				if(isFloat) throw new JsonException("Parsing Error : Invalid Json format.");
+				if(isFloat) {
+					throw new JsonException("Parsing Error : Value cannot hold multiple '.' characters.\nError at index " + this.currentIndex+1);
+				}
 				isFloat = true;
 			}
 			intToken = (int) this.currentCharacter;
 			if(intToken >= 48 && intToken <= 57) isNumeric = true;
-			if((intToken==110 || intToken==102 || intToken==116) && isNumeric) throw new JsonException("Parsing Error : Invalid Json format.");
+			if((intToken==110 || intToken==102 || intToken==116) && isNumeric) {
+				throw new JsonException("Parsing Error : Value type not supported.");
+			}
 			primitiveBuilder.append(this.currentCharacter);
 			jumpAhead(jsonText, 1);
 		}
@@ -240,6 +246,6 @@ public class JsonTokenizer implements UniversalConstants {
 		if(primitiveToken.equals(FALSE)) return false;
 		if(primitiveToken.equals(NULL)) return null;
 		
-		throw new JsonException("Parsing Error : Invalid Json format.");
+		throw new JsonException("Parsing Error : Invalid Json format.\nError at index " + this.currentIndex+1);
 	}
 }
