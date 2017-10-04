@@ -165,7 +165,7 @@ public class JsonTokenizer implements UniversalConstants {
 					
 				default:
 					if(!validStartForPrimitive(this.currentCharacter)) {
-						throw new JsonException("Parsing Error : Invalid value type.\nError at index " + this.currentIndex+1);
+						throw new JsonException("Parsing Error : Invalid value type.\nError at index " + (this.currentIndex+1));
 					}
 					internalJson.add(key, this.extractPrimitive(jsonText));
 			}
@@ -229,7 +229,7 @@ public class JsonTokenizer implements UniversalConstants {
 		while(this.currentCharacter != SPACE && this.currentCharacter != COMMA && this.currentCharacter != CLOSED_CURLY_BRACE && this.currentCharacter != CLOSED_SQUARE_BRACE) {
 			if(this.currentCharacter == DOT) { 
 				if(isFloat) {
-					throw new JsonException("Parsing Error : Value cannot hold multiple '.' characters.\nError at index " + this.currentIndex+1);
+					throw new JsonException("Parsing Error : Value cannot hold multiple '.' characters.\nError at index " + (this.currentIndex+1));
 				}
 				isFloat = true;
 			}
@@ -249,6 +249,6 @@ public class JsonTokenizer implements UniversalConstants {
 		if(primitiveToken.equals(FALSE)) return false;
 		if(primitiveToken.equals(NULL)) return null;
 		
-		throw new JsonException("Parsing Error : Invalid Json format.\nError at index " + this.currentIndex+1);
+		throw new JsonException("Parsing Error : Invalid Json format.\nError at index " + (this.currentIndex+1));
 	}
 }
