@@ -16,6 +16,7 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
@@ -24,22 +25,27 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
 	public void testTokenizeWithObject() {
-		String text = "{\"id\":\"12345\",\"name\":{\"first\":\"swayam\",\"last\":\"raina\"},\"level\":\"advanced\"}";
+		String text = "{\"level\":\"advanced\",\"name\":{\"last\":\"raina\",\"first\":\"swayam\"},\"id\":\"12345\"}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
 	public void testTokenizeWithRecursiveObjects() {
-		String text = "{\"name\":{\"last\":{\"name\":\"raina\"}},\"level\":\"advanced\"}";
+		String text = "{\"level\":\"advanced\",\"name\":{\"last\":{\"name\":\"raina\"}}}";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
@@ -65,6 +71,8 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
@@ -73,6 +81,8 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
@@ -81,6 +91,8 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
@@ -89,6 +101,8 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test(expected = JsonException.class)
@@ -113,6 +127,8 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test(expected = JsonException.class)
@@ -137,6 +153,8 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
@@ -145,6 +163,8 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
@@ -153,11 +173,13 @@ public class JsonTokenizerTest {
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
 		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 	@Test
 	public void testStandAlonePrettify() {
-		String text = "{\"class\":[{\"roll1\":{\"fname\":\"swayam\",\"lname\":\"raina\"}},{\"roll2\":{\"fname\":\"ujjwal\",\"lname\":\"raina\"}}],\"total\":2}";
+		String text = "{\"total\":2,\"class\":[{\"roll1\":{\"fname\":\"swayam\",\"lname\":\"raina\"}},{\"roll2\":{\"fname\":\"ujjwal\",\"lname\":\"raina\"}}]}";
 		System.out.println(JsonObject.prettify(text));
 		System.out.println();
 	}
@@ -177,6 +199,9 @@ public class JsonTokenizerTest {
 		String text = "{\"numbers\": [1,2,3,4,5,6,7,8,9] }";
 		JsonObject json = new JsonTokenizer().tokenize(text);
 		System.out.println(json.prettify());
+		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
 	}
 	
 }
