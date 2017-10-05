@@ -1,5 +1,9 @@
 package main.com.swayam.json;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class JsonTokenizer implements UniversalConstants {
 	
 	private int currentIndex;
@@ -11,10 +15,24 @@ public class JsonTokenizer implements UniversalConstants {
 	}
 	
 	public JsonObject tokenize(final String jsonText) {
-		if(!validJson(jsonText)) throw new JsonException("Parsing Error : Invalid Json format.");
-		
+		if(!validJson(jsonText)) {
+			throw new JsonException("Parsing Error : Invalid Json format.");
+		}
 		// if valid, parse the JSON
 		return this.extractObject(jsonText);
+	}
+	
+	public JsonObject tokenize(final File file) throws IOException {
+		FileReader jsonFileReader = new FileReader(file);
+		int ch;
+		StringBuilder stringBuilder = new StringBuilder();
+		while((ch=jsonFileReader.read())!=-1) {
+			stringBuilder.append((char)ch);
+		}
+		jsonFileReader.close();
+		
+		// call base tokenize method
+		return tokenize(stringBuilder.toString());
 	}
 	
 	public String extractKey(final String jsonText) {
@@ -138,7 +156,7 @@ public class JsonTokenizer implements UniversalConstants {
 			if(this.currentCharacter == QUOTE) {
 				key = this.extractKey(jsonText);
 			}
-			
+			skipSpaces(jsonText);
 			switch(this.currentCharacter) {
 				case CLOSED_CURLY_BRACE:
 					objectNotParsed = false;
@@ -194,7 +212,7 @@ public class JsonTokenizer implements UniversalConstants {
 	}
 	
 	private void skipSpaces(final String jsonText) {
-		while(this.currentCharacter == SPACE) {
+		while(currentCharacter == SPACE || currentCharacter == NEWLINE || currentCharacter == TAB) {
 			jumpAhead(jsonText, 1);
 		}
 	}
