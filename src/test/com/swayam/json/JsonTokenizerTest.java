@@ -2,6 +2,9 @@ package test.com.swayam.json;
 
 import static org.junit.Assert.assertEquals;
 
+import java.io.File;
+import java.io.IOException;
+
 import org.junit.Test;
 
 import main.com.swayam.json.JsonException;
@@ -202,6 +205,24 @@ public class JsonTokenizerTest {
 		System.out.println();
 		// may fail because of internal rearrangement or space trimming
 		assertEquals(text, json.serialize());
+	}
+	
+	@Test
+	public void testString() {
+		String text = "{\"address\": \"347 Everit Street, Cotopaxi, Florida, 215\"}";
+		JsonObject json = new JsonTokenizer().tokenize(text);
+		System.out.println(json.prettify());
+		System.out.println();
+		// may fail because of internal rearrangement or space trimming
+		assertEquals(text, json.serialize());
+	}
+	
+	@Test
+	public void testJsonCreationFromFile() throws IOException {
+		File jsonFile = new File("/home/swayam/Json/src/test/com/swayam/json/files/test1.json");
+		JsonObject json = new JsonTokenizer().tokenize(jsonFile);
+		System.out.println(json.prettify());
+		System.out.println();
 	}
 	
 }
