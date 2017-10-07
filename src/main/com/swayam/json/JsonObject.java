@@ -106,11 +106,12 @@ public class JsonObject implements UniversalConstants {
 		char currentChar = UniversalConstants.SPACE; 
 		char nextChar = UniversalConstants.SPACE;
 		boolean appendMode = false;
+		boolean newLine = true;
 		
 		// start processing incoming JSON text
 		while(currentIndex != jsonTextStringLength) {
 			currentChar = jsonText.charAt(currentIndex);
-			if(appendMode) appendTabs(prettyJsonBuilder, tabs);
+			if(appendMode && newLine) appendTabs(prettyJsonBuilder, tabs);
 			switch(currentChar) {
 				// whenever open braces token is encountered, append mode is turned "ON"
 				case OPEN_CURLY_BRACE:
@@ -141,7 +142,7 @@ public class JsonObject implements UniversalConstants {
 				case COMMA:
 					prettyJsonBuilder.append(SPACE);
 					prettyJsonBuilder.append(currentChar);
-					prettyJsonBuilder.append(NEWLINE);
+					if(newLine) prettyJsonBuilder.append(NEWLINE);
 					appendMode = true;
 					break;
 					
@@ -153,6 +154,7 @@ public class JsonObject implements UniversalConstants {
 					break;
 				
 				default:
+					if(currentChar == QUOTE) newLine = !newLine;
 					prettyJsonBuilder.append(currentChar);
 					nextChar = jsonText.charAt(currentIndex+1);
 					appendMode = false;
